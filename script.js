@@ -63,14 +63,14 @@ function createTask() {
   console.log(`task created: ${title}`);
 
   // Create a new task object and add it to the list
-  const newTask = { title, category, quantity, uuid };
-  list.push(newTask);
+  const task = { title, category, quantity, uuid };
+  list.push(task);
 
   // Save the updated list to localStorage
   localStorage.setItem("taskList", JSON.stringify(list));
 
   //display the task and send the object information with it
-  displayTask(newTask);
+  displayTask(task);
   reset();
 }
 
@@ -81,7 +81,7 @@ function reset() {
   document.querySelector("#createQuantity").value = "";
 }
 
-function displayTask(newTask) {
+function displayTask(task) {
   // create clone
   const clone = document.querySelector("template#tasks").content.cloneNode(true);
 
@@ -89,14 +89,18 @@ function displayTask(newTask) {
   //   const time = date.toLocaleTimeString();
 
   // set clone data
-  clone.querySelector("[data-type=title] span").textContent = newTask.title;
-  clone.querySelector("[data-type=quantity] span").textContent = newTask.quantity;
-  clone.querySelector("[data-type=category] span").textContent = newTask.category;
-  clone.querySelector("[data-type=uuid] span").textContent = newTask.uuid;
+  clone.querySelector("[data-type=title] span").textContent = task.title;
+  clone.querySelector("[data-type=quantity] span").textContent = task.quantity;
+  clone.querySelector("[data-type=category] span").textContent = task.category;
+  clone.querySelector("[data-type=uuid] span").textContent = task.uuid;
   //clone.querySelector("[data-type=time] span").textContent = `${date} at ${time}`;
 
-  //make card clickable for deactivation
-  clone.querySelector(".task-card").addEventListener("click", deactivate);
+  // Assign the uuid to the card
+  const card = clone.querySelector(".task-card");
+  card.setAttribute("data-uuid", task.uuid);
+
+  // Make the card clickable to deactivate
+  card.addEventListener("click", () => deactivateTask(task));
 
   // append clone to list
   document.querySelector("#displayTask").appendChild(clone);
@@ -130,8 +134,32 @@ function deactivate(event) {
   displayDeactivatedTask(deactivatedTask);
 }
 
+function deactivateTask(task) {
+  // check if the task already is in the deactivated list
+  const alreadyDeactivated = deactivatedList.some((t) => t.uuid === task.uuid);
+  if (!alreadyDeactivated) {
+    //add task to deactivated list if its not there
+    deactivatedList.push(task);
+    localStorage.setItem("deactivatedList", JSON.stringify(deactivatedList));
+  }
+
+  // Remove from the active list
+  list = list.filter((t) => t.uuid !== task.uuid);
+  localStorage.setItem("taskList", JSON.stringify(list));
+
+  // Remove the card from the active section
+  const card = document.querySelector(`.task-card[data-uuid="${task.uuid}"]`);
+  if (card) card.remove();
+
+  // Display the task in the deactivated section
+  displayDeactivatedTask(task);
+}
+
 // Display a task in the deactivated list
 function displayDeactivatedTask(task) {
+  // Check if the task already exists in the DOM to avoid duplicates
+
+  if (document.querySelector(`.task-card[data-uuid="${task.uuid}"]`)) return;
   const clone = document.querySelector("template#tasks").content.cloneNode(true);
 
   // Set task data
@@ -140,14 +168,40 @@ function displayDeactivatedTask(task) {
   clone.querySelector("[data-type=quantity] span").textContent = task.quantity;
   clone.querySelector("[data-type=uuid] span").textContent = task.uuid;
 
+  // Assign the uuid to the card
   const card = clone.querySelector(".task-card");
   card.setAttribute("data-uuid", task.uuid);
 
   //clone.querySelector(".task-card").addEventListener("click", reAddTask);
-  clone.querySelector(".task-card").addEventListener("click", () => userDecide(task));
+  card.addEventListener("click", () => userDecide(task));
 
   // Append to the deactivated task section
   document.querySelector("#deactivatedTask").appendChild(clone);
+}
+
+//reAdd function that removes itemdata from deactivatedList to active list
+function reAddTask(task) {
+  //check if the task already is in the active list
+  const alreadyActive = list.some((t) => t.uuid === task.uuid);
+  if (!alreadyActive) {
+    //add task to list
+    list.push(task);
+    localStorage.setItem("taskList", JSON.stringify(list));
+  }
+
+  // Remove the task from the deactivated list
+  deactivatedList = deactivatedList.filter((t) => t.uuid !== task.uuid);
+  localStorage.setItem("deactivatedList", JSON.stringify(deactivatedList));
+
+  // Remove the card from the deactivated task section
+  const card = document.querySelector(`[data-uuid="${task.uuid}"]`);
+  if (card) card.remove();
+
+  // Display the task in the active list
+  displayTask(task);
+
+  // Close the dialog
+  document.querySelector("dialog").close();
 }
 
 // Dialog where user should decide what to do when clicked on deactivated card
@@ -168,50 +222,3 @@ function userDecide(task) {
     dialog.close();
   });
 }
-
-function reAddTask(task) {
-  // Move the task back to the active list
-  list.push(task);
-  localStorage.setItem("taskList", JSON.stringify(list));
-
-  // Remove the task from the deactivated list
-  deactivatedList = deactivatedList.filter((t) => t.uuid !== task.uuid);
-  localStorage.setItem("deactivatedList", JSON.stringify(deactivatedList));
-
-  // Remove the card from the deactivated task section
-  const card = document.querySelector(`[data-uuid="${task.uuid}"]`);
-  if (card) card.remove();
-
-  // Display the task in the active list
-  displayTask(task);
-
-  // Close the dialog
-  document.querySelector("dialog").close();
-}
-
-// function reAddTask(event) {
-//   const card = event.target.closest(".task-card");
-
-//   if (!card) return; // Ignore clicks outside cards
-
-//   // Extract task data from the card
-//   const title = card.querySelector("[data-type=title] span").textContent;
-//   const category = card.querySelector("[data-type=category] span").textContent;
-//   const quantity = card.querySelector("[data-type=quantity] span").textContent;
-//   const uuid = card.querySelector("[data-type=uuid] span").textContent;
-
-//   // Create a task object and add it to the active list
-//   const readdedTask = { title, category, quantity, uuid };
-//   list.push(readdedTask);
-
-//   // Save the updated lists to localStorage
-//   localStorage.setItem("taskList", JSON.stringify(list));
-
-//   // Remove the task from the deactivated list (memory and DOM)
-//   deactivatedList = deactivatedList.filter((task) => task.uuid !== uuid);
-//   localStorage.setItem("deactivatedList", JSON.stringify(deactivatedList));
-//   card.remove(); // Remove the card from the deactivated list section
-
-//   // Display the re-added task in the active list
-//   displayTask(readdedTask);
-// }

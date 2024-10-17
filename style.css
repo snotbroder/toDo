@@ -22,7 +22,7 @@ body {
   }
 }
 section {
-  height: 20rem;
+  min-height: 20rem;
 }
 
 #displayTask {
@@ -31,6 +31,10 @@ section {
   border-top: 3px black solid;
   padding: var(--section-padding);
   gap: 2rem;
+
+  :nth-child(1) {
+    order: -1;
+  }
 }
 
 .task-card {
@@ -38,6 +42,7 @@ section {
   border-radius: 3px;
   padding: var(--card-padding);
   max-width: auto;
+
   &:hover {
     outline: solid black 2px;
   }
