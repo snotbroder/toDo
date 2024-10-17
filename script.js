@@ -151,6 +151,9 @@ function deactivateTask(task) {
   const card = document.querySelector(`.task-card[data-uuid="${task.uuid}"]`);
   if (card) card.remove();
 
+  //update number list
+  updateArrayLength();
+
   // Display the task in the deactivated section
   displayDeactivatedTask(task);
 }
@@ -200,6 +203,9 @@ function reAddTask(task) {
   // Display the task in the active list
   displayTask(task);
 
+  // Update number list
+  updateArrayLength();
+
   // Close the dialog
   document.querySelector("dialog").close();
 }
@@ -221,4 +227,9 @@ function userDecide(task) {
   closeBtn.addEventListener("click", () => {
     dialog.close();
   });
+}
+
+function updateArrayLength() {
+  document.querySelector("#activeNumber span").textContent = list.length;
+  document.querySelector("#deactiveNumber span").textContent = deactivatedList.length;
 }
