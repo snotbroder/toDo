@@ -3,16 +3,12 @@ body {
   --section-padding: 2rem 0.25rem;
   --card-padding: 1rem 0.5rem;
 }
-#displayTask {
+.hero {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  border-top: 3px black solid;
-  padding: var(--section-padding);
+  grid-template-columns: 2fr 3fr;
   gap: 2rem;
 }
-
 .input-section {
-  width: 40%;
   display: flex;
   flex-direction: column;
   padding: var(--section-padding);
@@ -25,9 +21,42 @@ body {
     }
   }
 }
+section {
+  height: 20rem;
+}
+
+#displayTask {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  border-top: 3px black solid;
+  padding: var(--section-padding);
+  gap: 2rem;
+}
+
 .task-card {
   background-color: lightgray;
   border-radius: 3px;
   padding: var(--card-padding);
-  max-width: 250px;
+  max-width: auto;
+  &:hover {
+    outline: solid black 2px;
+  }
+  height: fit-content;
+}
+
+.deactivated {
+  background-color: rgb(255, 255, 255);
+}
+
+#deactivatedTask {
+  background-color: lightgray;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  border-top: 3px black solid;
+  padding: var(--section-padding);
+  gap: 2rem;
+
+  > * {
+    background-color: rgb(255, 255, 255);
+  }
 }

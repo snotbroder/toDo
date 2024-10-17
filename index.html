@@ -9,23 +9,35 @@
 </head>
 
 <body>
-    <h1>ToDo list</h1>
-    <section class="control-panel"><button id="resetList">reset list</button><button id="printList">print list</button>
-    </section>
-    <section class="input-section" id="input">
-        <h2>Add new item</h2>
-        <form action="">
-            <label for="createTitle">title</label>
-            <input id="createTitle" type="text" required>
-            <label for="createCategory">category</label>
-            <input id="createCategory" type="text" required>
-            <label for="createQuantity">quantity</label>
-            <input id="createQuantity" min="1" max="10" type="number" required>
-        </form>
-        <button id="create">Create task</button>
-    </section>
-    <section id="displayTask"></section>
 
+    <section class="hero">
+        <div class="input-section" id="input">
+            <h3>Add new item</h2>
+                <form action="">
+                    <label for="createTitle">title</label>
+                    <input id="createTitle" type="text" required>
+                    <label for="createCategory">category</label>
+                    <input id="createCategory" type="text" required>
+                    <label for="createQuantity">quantity</label>
+                    <input id="createQuantity" min="1" max="10" type="number" required>
+                </form>
+                <button id="create">Create task</button>
+        </div>
+        <div>
+            <h1>Shopping list</h1>
+            <div class="control-panel">
+                <button id="resetList">reset active list</button>
+                <button id="resetDeactivatedList">reset deactivated list</button>
+                <button id="printList">print list</button>
+            </div>
+        </div>
+    </section>
+    <section id="displayTask">
+        <!-- active cards -->
+    </section>
+    <section id="deactivatedTask">
+        <!-- deactivated cards -->
+    </section>
     <template id="tasks">
         <article class="task-card">
             <h3 data-type="title">Item name: <span></span></h3>
